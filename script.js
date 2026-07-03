@@ -468,13 +468,15 @@ window.addEventListener('scroll',()=>{
     talk_human: {
       text: "Vou te encaminhar para Ronaldo no WhatsApp. Só um momento...",
       action: () => {
-        // Fecha o chatbot para não ficar sobreposto ao modal.
+        // Fecha o chatbot e redireciona direto para o WhatsApp.
         chatbotWindow?.classList.remove('open');
 
-        // Abre o modal de cadastro para capturar os dados e enviar ao atendente selecionado.
         const modal = document.getElementById('lead-modal');
-        modal?.classList.add('open');
-        document.body.style.overflow = 'hidden';
+        modal?.classList.remove('open');
+        document.body.style.overflow = '';
+
+        const whatsapp = '5531984783993';
+        window.open(`https://wa.me/${whatsapp}`, '_blank');
       },
       options: [{ text: "Voltar", id: "start" }]
     }
@@ -535,4 +537,33 @@ window.addEventListener('scroll',()=>{
   chatbotToggle?.addEventListener('click', toggleChat);
   chatbotClose?.addEventListener('click', toggleChat);
 
+  // Botões "Eu quero" (topo) e "Iniciar Atendimento" devem abrir direto o WhatsApp,
+  // sem modal de formulário.
+  const whatsapp = '5531984783993';
+  document.querySelectorAll('a.btn-primary').forEach((a) => {
+    const label = (a.textContent || '').toLowerCase();
+    const href = (a.getAttribute('href') || '').toLowerCase();
+
+    if (label.includes('eu quero') || label.includes('iniciar atendimento')) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        chatbotWindow?.classList.remove('open');
+
+        const modal = document.getElementById('lead-modal');
+        modal?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    // Se já estiver apontando para wa.me (por causa do link no HTML), garantimos que abre o modal.
+    if (href.includes('wa.me/5531984783993')) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        chatbotWindow?.classList.remove('open');
+        const modal = document.getElementById('lead-modal');
+        modal?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+  });
 });
